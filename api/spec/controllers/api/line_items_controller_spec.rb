@@ -61,7 +61,7 @@ describe Api::LineItemsController do
 
       it 'should return unauthorized' do
         get uri_for("/line_items.json"), nil, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -69,7 +69,7 @@ describe Api::LineItemsController do
       before {LineItem.stub(:new).and_return(line_item)}
       it "should return unauthorized" do
         get uri_for("/line_items/#{line_item.id}.json"), nil, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -77,7 +77,7 @@ describe Api::LineItemsController do
 
       it "should return unauthorized" do
         post uri_for("/line_items.json"), {:line_item => {:order => order}}, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -85,7 +85,7 @@ describe Api::LineItemsController do
 
       it "should return unauthorized" do
         put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
   end
@@ -97,7 +97,7 @@ describe Api::LineItemsController do
 
       it 'should return unauthorized' do
         get uri_for("/line_items.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -106,7 +106,7 @@ describe Api::LineItemsController do
 
       it "should return unauthorized" do
         get uri_for("/line_items/#{line_item.id}.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -114,7 +114,7 @@ describe Api::LineItemsController do
 
       it "should return unauthorized" do
         post uri_for("/line_items.json"), {:line_item => {:order => order}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -122,7 +122,7 @@ describe Api::LineItemsController do
 
       it "should return unauthorized" do
         put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
   end

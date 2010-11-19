@@ -60,7 +60,7 @@ describe Api::InventoryUnitsController do
     describe "GET index" do
       it 'should return unauthorized' do
         get uri_for("/inventory_units.json"), nil, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -69,15 +69,15 @@ describe Api::InventoryUnitsController do
 
       it "should return unauthorized" do
         get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
     describe "POST create" do
 
       it "should return unauthorized" do
-        post uri_for("/api/inventory_units.json"), {:text => {:foo => "text"}}, user_request("")
-        last_response.status.should == 401
+        post uri_for("/inventory_units.json"), {:text => {:foo => "text"}}, user_request("")
+        last_response.status.should == 418
       end
     end
 
@@ -87,7 +87,7 @@ describe Api::InventoryUnitsController do
       end
       it "should return unauthorized" do
         put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
   end
@@ -96,7 +96,7 @@ describe Api::InventoryUnitsController do
     describe "GET index" do
       it 'should return unauthorized' do
         get uri_for("/inventory_units.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -105,15 +105,15 @@ describe Api::InventoryUnitsController do
 
       it "should return unauthorized" do
         get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
     describe "POST create" do
 
       it "should return unauthorized" do
-        post uri_for("/api/inventory_units.json"), {:text => {:foo => "text"}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        post uri_for("/inventory_units.json"), {:text => {:foo => "text"}}, user_request(@user.authentication_token.reverse)
+        last_response.status.should == 418
       end
     end
 
@@ -122,7 +122,7 @@ describe Api::InventoryUnitsController do
 
       it "should return unauthorized" do
         put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
   end

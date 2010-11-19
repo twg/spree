@@ -48,7 +48,7 @@ describe Api::OrdersController do
     describe "#show" do
       it "should return unauthorized" do
         get uri_for("/orders/#{@order}.json"), nil, user_request(nil)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -57,14 +57,14 @@ describe Api::OrdersController do
       context "when no search params" do
         it "should return unauthorized" do
           get  uri_for("/orders.json"), nil, user_request(nil)
-          last_response.status.should == 401
+          last_response.status.should == 418
         end
       end
 
       context "when given search params" do
         it "should return unauthorized" do
           get uri_for("/orders.json?search=#{@order}"), {:search => @order}, user_request(nil)
-          last_response.status.should == 401
+          last_response.status.should == 418
         end
       end
     end
@@ -76,7 +76,7 @@ describe Api::OrdersController do
     describe "#show" do
       it "should return unauthorized" do
         get uri_for("/orders/#{@order}.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -85,14 +85,14 @@ describe Api::OrdersController do
       context "when no search params" do
         it "should return unauthorized" do
           get  uri_for("/orders.json"), nil, user_request(@user.authentication_token.reverse)
-          last_response.status.should == 401
+          last_response.status.should == 418
         end
       end
 
       context "when given search params" do
         it "should return unauthorized" do
           get uri_for("/orders.json?search=#{@order}"), {:search => @order}, user_request(@user.authentication_token.reverse)
-          last_response.status.should == 401
+          last_response.status.should == 418
         end
       end
     end

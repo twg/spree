@@ -38,7 +38,7 @@ class Api::BaseController < Spree::BaseController
   end
 
   def access_denied
-    render :text => 'access_denied', :status => 401
+    render :text => 'access_denied', :status => 418
   end
 
   # Generic action to handle firing of state events on an object

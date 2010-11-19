@@ -37,7 +37,9 @@ Spree::BaseController.class_eval do
         request_http_basic_authentication 'Web Password'
       end
       format.json do
-        render :text => "Not Authorized", :status => 422
+        # NOTE: We really want to return 301 error code but this causes issues with Devise and Warden.  Just return the phony 418
+        # since we're not going to waste our time sorting this out.  Honestly, who really gives a fuck?  Unauthorized says it all.
+        render :text => "Not Authorized \n", :status => 418
       end
     end
   end

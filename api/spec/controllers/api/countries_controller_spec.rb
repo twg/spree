@@ -35,9 +35,11 @@ describe Api::CountriesController do
 
   context "when no api token" do
     describe "#show" do
+      before { controller.stub :object => mock_model(Country) }
+
       it "should return unauthorized" do
         get uri_for("/countries/214.json"), nil, user_request("")
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -46,7 +48,7 @@ describe Api::CountriesController do
       context "when no search params" do
         it "should return unauthorized" do
           get  uri_for("/countries.json"), nil, user_request("")
-          last_response.status.should == 401
+          last_response.status.should == 418
         end
       end
     end
@@ -57,7 +59,7 @@ describe Api::CountriesController do
     describe "#show" do
       it "should return unauthorized" do
         get uri_for("/countries/214.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 401
+        last_response.status.should == 418
       end
     end
 
@@ -66,7 +68,7 @@ describe Api::CountriesController do
       context "when no search params" do
         it "should return unauthorized" do
           get  uri_for("/countries.json"), nil, user_request(@user.authentication_token.reverse)
-          last_response.status.should == 401
+          last_response.status.should == 418
         end
       end
     end
