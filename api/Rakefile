@@ -32,7 +32,7 @@ task :test_app do
       append_file 'Gemfile' do
 <<-gems
         gem 'spree_core', :path => \'#{File.join(File.dirname(__FILE__), "..", "core")}\'
-        gem 'spree_auth', :path => '/Users/pinstails/Sites/spree/auth/../auth'
+        gem 'spree_auth', :path => \'#{File.join(File.dirname(__FILE__), "..", "auth")}\'
         gem 'spree_api', :path => \'#{File.dirname(__FILE__)}\'
 gems
       end
