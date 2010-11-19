@@ -46,25 +46,25 @@ describe Api::OrdersController do
     let(:mock_unit) { mock("unit") }
     before { controller.stub :collection => [mock_unit] }
     describe "#show" do
-      it "should return JSON for the specified order" do
+      it "should return unauthorized" do
         get uri_for("/orders/#{@order}.json"), nil, user_request(nil)
-        last_response.status.should == 406
+        last_response.status.should == 401
       end
     end
 
     describe "#index" do
 
       context "when no search params" do
-        it "should return JSON for all of the orders" do
+        it "should return unauthorized" do
           get  uri_for("/orders.json"), nil, user_request(nil)
-          last_response.status.should == 422
+          last_response.status.should == 401
         end
       end
 
       context "when given search params" do
-        it "should return JSON for the requested orders" do
+        it "should return unauthorized" do
           get uri_for("/orders.json?search=#{@order}"), {:search => @order}, user_request(nil)
-          last_response.status.should == 422
+          last_response.status.should == 401
         end
       end
     end
@@ -74,25 +74,25 @@ describe Api::OrdersController do
     let(:mock_unit) { mock("unit") }
     before { controller.stub :collection => [mock_unit] }
     describe "#show" do
-      it "should return JSON for the specified order" do
+      it "should return unauthorized" do
         get uri_for("/orders/#{@order}.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 406
+        last_response.status.should == 401
       end
     end
 
     describe "#index" do
 
       context "when no search params" do
-        it "should return JSON for all of the orders" do
+        it "should return unauthorized" do
           get  uri_for("/orders.json"), nil, user_request(@user.authentication_token.reverse)
-          last_response.status.should == 422
+          last_response.status.should == 401
         end
       end
 
       context "when given search params" do
-        it "should return JSON for the requested orders" do
+        it "should return unauthorized" do
           get uri_for("/orders.json?search=#{@order}"), {:search => @order}, user_request(@user.authentication_token.reverse)
-          last_response.status.should == 422
+          last_response.status.should == 401
         end
       end
     end

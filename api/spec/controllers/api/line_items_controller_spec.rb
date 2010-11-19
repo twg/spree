@@ -59,33 +59,33 @@ describe Api::LineItemsController do
       let(:collection) { mock("collection") }
       before { controller.stub :collection => collection }
 
-      it 'should GET list of Line Items' do
+      it 'should return unauthorized' do
         get uri_for("/line_items.json"), nil, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "GET show" do
       before {LineItem.stub(:new).and_return(line_item)}
-      it "should GET a single Line Item" do
+      it "should return unauthorized" do
         get uri_for("/line_items/#{line_item.id}.json"), nil, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "POST create" do
 
-      it "should POST new data to Line Items" do
+      it "should return unauthorized" do
         post uri_for("/line_items.json"), {:line_item => {:order => order}}, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "PUT update" do
 
-      it "should PUT updated data into Line Items" do
+      it "should return unauthorized" do
         put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
   end
@@ -95,34 +95,34 @@ describe Api::LineItemsController do
       let(:collection) { mock("collection") }
       before { controller.stub :collection => collection }
 
-      it 'should GET list of Line Items' do
+      it 'should return unauthorized' do
         get uri_for("/line_items.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "GET show" do
       before {LineItem.stub(:new).and_return(line_item)}
 
-      it "should GET a single Line Item" do
+      it "should return unauthorized" do
         get uri_for("/line_items/#{line_item.id}.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "POST create" do
 
-      it "should POST new data to Line Items" do
+      it "should return unauthorized" do
         post uri_for("/line_items.json"), {:line_item => {:order => order}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "PUT update" do
 
-      it "should PUT updated data into Line Items" do
+      it "should return unauthorized" do
         put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
   end

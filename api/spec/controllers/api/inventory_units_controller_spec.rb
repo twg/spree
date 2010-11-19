@@ -58,26 +58,26 @@ describe Api::InventoryUnitsController do
 
   context "with no auth token" do
     describe "GET index" do
-      it 'should not GET list of Inventory Units (no auth_token)' do
+      it 'should return unauthorized' do
         get uri_for("/inventory_units.json"), nil, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "GET show" do
       before {InventoryUnit.stub(:new).and_return(inventory_unit)}
 
-      it "should GET a single Inventory Unit" do
+      it "should return unauthorized" do
         get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request("")
-        last_response.status.should == 406
+        last_response.status.should == 401
       end
     end
 
     describe "POST create" do
 
-      it "should POST new data to Inventory Units" do
+      it "should return unauthorized" do
         post uri_for("/api/inventory_units.json"), {:text => {:foo => "text"}}, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
@@ -85,44 +85,44 @@ describe Api::InventoryUnitsController do
       before do
         InventoryUnit.stub(:find).and_return(inventory_unit)
       end
-      it "should PUT updated data into Inventory Units" do
+      it "should return unauthorized" do
         put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request("")
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
   end
 
   context "with a bad auth token" do
     describe "GET index" do
-      it 'should not GET list of Inventory Units (bad auth_token)' do
+      it 'should return unauthorized' do
         get uri_for("/inventory_units.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "GET show" do
       before {InventoryUnit.stub(:new).and_return(inventory_unit)}
 
-      it "should GET a single Inventory Unit" do
+      it "should return unauthorized" do
         get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 406
+        last_response.status.should == 401
       end
     end
 
     describe "POST create" do
 
-      it "should POST new data to Inventory Units" do
+      it "should return unauthorized" do
         post uri_for("/api/inventory_units.json"), {:text => {:foo => "text"}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
 
     describe "PUT update" do
       before { InventoryUnit.stub(:find).and_return(inventory_unit) }
 
-      it "should PUT updated data into Inventory Units" do
+      it "should return unauthorized" do
         put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request(@user.authentication_token.reverse)
-        last_response.status.should == 422
+        last_response.status.should == 401
       end
     end
   end

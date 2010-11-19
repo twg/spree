@@ -35,18 +35,18 @@ describe Api::CountriesController do
 
   context "when no api token" do
     describe "#show" do
-      it "should return JSON for the specified order" do
+      it "should return unauthorized" do
         get uri_for("/countries/214.json"), nil, user_request("")
-        response.should be_success
+        last_response.status.should == 401
       end
     end
 
     describe "#index" do
 
       context "when no search params" do
-        it "should return JSON for all of the orders" do
+        it "should return unauthorized" do
           get  uri_for("/countries.json"), nil, user_request("")
-          response.should be_success
+          last_response.status.should == 401
         end
       end
     end
@@ -55,18 +55,18 @@ describe Api::CountriesController do
 
   context "when bad api token" do
     describe "#show" do
-      it "should return JSON for the specified order" do
+      it "should return unauthorized" do
         get uri_for("/countries/214.json"), nil, user_request(@user.authentication_token.reverse)
-        response.should be_success
+        last_response.status.should == 401
       end
     end
 
     describe "#index" do
 
       context "when no search params" do
-        it "should return JSON for all of the orders" do
+        it "should return unauthorized" do
           get  uri_for("/countries.json"), nil, user_request(@user.authentication_token.reverse)
-          response.should be_success
+          last_response.status.should == 401
         end
       end
     end
