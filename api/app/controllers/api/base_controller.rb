@@ -4,22 +4,23 @@ class Api::BaseController < Spree::BaseController
     resource_controller
     skip_before_filter :verify_authenticity_token, :if => lambda { admin_token_passed_in_headers }
 
-    index.response do |wants|
+    index do
       wants.json { render :json => collection.to_json(collection_serialization_options) }
     end
 
-    show.response do |wants|
+    show do
       wants.json { render :json => object.to_json(object_serialization_options) }
+      failure.wants.json { render :text => "Failure\n", :status => 500 }
     end
 
     create do
       wants.json { redirect_to object_url, :status => 201 }
-      failure.wants.json { render :json => object_errors.to_json, :status => 422 }
+      failure.wants.json { render :text => "Failure\n", :status => 500 }
     end
 
     update do
       wants.json { render :nothing => true }
-      failure.wants.json { render :json => object_errors.to_json, :status => 422 }
+      failure.wants.json { render :text => "Failure\n", :status => 500 }
     end
 
     define_method :admin_token_passed_in_headers do
