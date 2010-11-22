@@ -4,26 +4,26 @@ describe Api::LineItemsController do
   # using this to simutanitously test routes
   include Rack::Test::Methods
 
-  before(:each) do
-    @user = mock_model(User).as_null_object
-    @order = Order.stub(:number => "R123123")
-  end
-
   def app
     Rails.application
   end
 
-  let(:order) { mock_model(Order, :number => "R123123", :reload => nil, :save! => true) }
-  let(:line_item) { mock_model(LineItem).as_null_object }
+  let(:order) { Order.new }
+  let(:line_item) { mock_model(LineItem, :update_attributes => true) }
+  let(:user) { mock_model(User, :has_role? => true, :valid_for_authentication? => true, :after_token_authentication => nil) }
 
-  context "with auth token" do
+  before do
+    Order.stub :find_by_param! => order
+    User.stub(:find_for_token_authentication).with(:auth_token => VALID_TOKEN).and_return user
+    User.stub(:find_for_token_authentication).with(:auth_token => "foo").and_return nil
+  end
+
+  context "with valid auth token" do
+    let(:credentials) { encode_credentials(VALID_TOKEN) }
 
     describe "GET index" do
-      let(:collection) { mock("collection") }
-      before { controller.stub :collection => collection }
-
       it 'should GET list of Line Items' do
-        get uri_for("/line_items.json"), nil, user_request(@user.authentication_token)
+        get uri_for("/orders/R123456/line_items.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
@@ -31,7 +31,7 @@ describe Api::LineItemsController do
     describe "GET show" do
       before {LineItem.stub(:new).and_return(line_item)}
       it "should GET a single Line Item" do
-        get uri_for("/line_items/#{line_item.id}.json"), nil, user_request(@user.authentication_token)
+        get uri_for("/orders/R123456/line_items/#{line_item.id}.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
@@ -39,7 +39,7 @@ describe Api::LineItemsController do
     describe "POST create" do
 
       it "should POST new data to Line Items" do
-        post uri_for("/line_item.json"), {:line_item => {:order => order}}, user_request(@user.authentication_token)
+        post uri_for("/orders/R123456/line_item.json"), {:line_item => {:order => order}}, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
@@ -47,7 +47,7 @@ describe Api::LineItemsController do
     describe "PUT update" do
 
       it "should PUT updated data into Line Items" do
-        put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request(@user.authentication_token)
+        put uri_for("/orders/R123456/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
@@ -56,19 +56,17 @@ describe Api::LineItemsController do
 
   context "with no auth token" do
     describe "GET index" do
-      let(:collection) { mock("collection") }
-      before { controller.stub :collection => collection }
-
       it 'should return unauthorized' do
-        get uri_for("/line_items.json"), nil, user_request("")
+        get uri_for("/orders/R123456/line_items.json")
         last_response.status.should == 418
       end
     end
 
     describe "GET show" do
-      before {LineItem.stub(:new).and_return(line_item)}
+      before { order.stub_chain(:line_items, :scoped, :find => line_item) }
+
       it "should return unauthorized" do
-        get uri_for("/line_items/#{line_item.id}.json"), nil, user_request("")
+        get uri_for("/orders/R123456/line_items/1.json")
         last_response.status.should == 418
       end
     end
@@ -76,36 +74,36 @@ describe Api::LineItemsController do
     describe "POST create" do
 
       it "should return unauthorized" do
-        post uri_for("/line_items.json"), {:line_item => {:order => order}}, user_request("")
+        post uri_for("/orders/R123456/line_items.json")
         last_response.status.should == 418
       end
     end
 
     describe "PUT update" do
+      before { order.stub_chain(:line_items, :scoped, :find => line_item) }
 
       it "should return unauthorized" do
-        put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request("")
+        put uri_for("/orders/R123456/line_items/1.json")
         last_response.status.should == 418
       end
     end
   end
 
   context "with bad auth token" do
-    describe "GET index" do
-      let(:collection) { mock("collection") }
-      before { controller.stub :collection => collection }
+    let(:credentials) { encode_credentials("foo") }
 
+    describe "GET index" do
       it 'should return unauthorized' do
-        get uri_for("/line_items.json"), nil, user_request(@user.authentication_token.reverse)
+        get uri_for("/orders/R123456/line_items.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
 
     describe "GET show" do
-      before {LineItem.stub(:new).and_return(line_item)}
+      before { order.stub_chain(:line_items, :scoped, :find => line_item) }
 
       it "should return unauthorized" do
-        get uri_for("/line_items/#{line_item.id}.json"), nil, user_request(@user.authentication_token.reverse)
+        get uri_for("/orders/R123456/line_items/1.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
@@ -113,15 +111,16 @@ describe Api::LineItemsController do
     describe "POST create" do
 
       it "should return unauthorized" do
-        post uri_for("/line_items.json"), {:line_item => {:order => order}}, user_request(@user.authentication_token.reverse)
+        post uri_for("/orders/R123456/line_items.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
 
     describe "PUT update" do
+      before { order.stub_chain(:line_items, :scoped, :find => line_item) }
 
       it "should return unauthorized" do
-        put uri_for("/line_items.json"), {:line_item => {:id => line_item.id, :order => order}}, user_request(@user.authentication_token.reverse)
+        put uri_for("/orders/R123456/line_items/1.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
