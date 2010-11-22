@@ -1,3 +1,5 @@
+VALID_TOKEN = "valid123"
+
 module ControllerMacros
 
   def user_request(req)
@@ -5,6 +7,10 @@ module ControllerMacros
       "Content-Type" => "application/json",
       "Accept" => "application/json"
     }
+  end
+
+  def encode_credentials(creds)
+    ActionController::HttpAuthentication::Basic.encode_credentials(creds, "x")
   end
 
   def uri_for(req)
