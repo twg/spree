@@ -7,121 +7,120 @@ describe Api::InventoryUnitsController do
     Rails.application
   end
 
-  let(:inventory_unit) { mock_model(InventoryUnit).as_null_object }
+  let(:order) { Order.new }
+  let(:inventory_unit) { mock_model(InventoryUnit, :update_attributes => true) }
+  let(:user) { mock_model(User, :has_role? => true, :valid_for_authentication? => true, :after_token_authentication => nil) }
 
-  before(:each) do
-    @user = create_user
-    @user.ensure_authentication_token!
-   #@user = mock_model(User).as_null_object
+  before do
+    Order.stub :find_by_param! => order
+    User.stub(:find_for_token_authentication).with(:auth_token => VALID_TOKEN).and_return user
+    User.stub(:find_for_token_authentication).with(:auth_token => "foo").and_return nil
+    InventoryUnit.stub :find => inventory_unit
   end
 
-  context "With a good token" do
+  context "when valid auth token" do
+    let(:credentials) { encode_credentials(VALID_TOKEN) }
 
     describe "GET index" do
-
-      let(:collection) { mock("collection") }
-      before { controller.stub :collection => collection }
 
       it 'should GET list of Inventory Units' do
-        get uri_for("/inventory_units.json"), nil, user_request(@user.authentication_token)
+        get uri_for("/orders/R123456/inventory_units.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
 
     describe "GET show" do
-      before {InventoryUnit.stub(:new).and_return(inventory_unit)}
 
       it "should GET a single Inventory Unit" do
-        get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request(@user.authentication_token)
+        get uri_for("/orders/R123456/inventory_units/1.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
 
     describe "POST create" do
-
       it "should POST new data to Inventory Units" do
-        post uri_for("/api/inventory_units.json"), {:text => {:foo => "text"}}, user_request(@user.authentication_token)
+        post uri_for("/orders/R123456/inventory_units.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
 
     describe "PUT update" do
-      before {InventoryUnit.stub(:new).and_return(inventory_unit)}
+      before { order.stub_chain(:inventory_units, :scoped, :find => inventory_unit) }
 
       it "should PUT updated data into Inventory Units" do
-        put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request(@user.authentication_token)
+        put uri_for("/orders/R123456/inventory_units/1.json"), {:text => {:id => 1, :foo => "text"}}, {'HTTP_AUTHORIZATION' => credentials}
         response.should be_success
       end
     end
 
   end
 
-  context "with no auth token" do
+  context "when no auth token" do
+
     describe "GET index" do
       it 'should return unauthorized' do
-        get uri_for("/inventory_units.json"), nil, user_request("")
+        get uri_for("/orders/R123456/inventory_units.json"), nil
         last_response.status.should == 418
       end
     end
 
     describe "GET show" do
-      before {InventoryUnit.stub(:new).and_return(inventory_unit)}
+      before { order.stub_chain(:inventory_units, :scoped, :find => inventory_unit) }
 
       it "should return unauthorized" do
-        get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request("")
+        get uri_for("/orders/R123456/inventory_units/1.json"), nil
         last_response.status.should == 418
       end
     end
 
     describe "POST create" do
-
       it "should return unauthorized" do
-        post uri_for("/inventory_units.json"), {:text => {:foo => "text"}}, user_request("")
+        post uri_for("/orders/R123456/inventory_units.json"), {:text => {:foo => "text"}}
         last_response.status.should == 418
       end
     end
 
     describe "PUT update" do
-      before do
-        InventoryUnit.stub(:find).and_return(inventory_unit)
-      end
+      before { order.stub_chain(:inventory_units, :scoped, :find => inventory_unit) }
+
       it "should return unauthorized" do
-        put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request("")
+        put uri_for("/orders/R123456/inventory_units/1.json"), {:text => {:id => 1, :foo => "text"}}
         last_response.status.should == 418
       end
     end
   end
 
-  context "with a bad auth token" do
+  context "when bad auth token" do
+    let(:credentials) { encode_credentials("foo") }
+
     describe "GET index" do
       it 'should return unauthorized' do
-        get uri_for("/inventory_units.json"), nil, user_request(@user.authentication_token.reverse)
+        get uri_for("/orders/R123456/inventory_units.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
 
     describe "GET show" do
-      before {InventoryUnit.stub(:new).and_return(inventory_unit)}
+      before { order.stub_chain(:inventory_units, :scoped, :find => inventory_unit) }
 
       it "should return unauthorized" do
-        get uri_for("/inventory_units/#{inventory_unit.id}.json"), nil, user_request(@user.authentication_token.reverse)
+        get uri_for("/orders/R123456/inventory_units/1.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
 
     describe "POST create" do
-
       it "should return unauthorized" do
-        post uri_for("/inventory_units.json"), {:text => {:foo => "text"}}, user_request(@user.authentication_token.reverse)
+        post uri_for("/orders/R123456/inventory_units.json"), {:text => {:foo => "text"}}, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
 
     describe "PUT update" do
-      before { InventoryUnit.stub(:find).and_return(inventory_unit) }
+      before { order.stub_chain(:inventory_units, :scoped, :find => inventory_unit) }
 
       it "should return unauthorized" do
-        put uri_for("/inventory_units.json"), {:text => {:id => inventory_unit.id, :foo => "text"}}, user_request(@user.authentication_token.reverse)
+        put uri_for("/orders/R123456/inventory_units/1.json"), {:text => {:id => 1, :foo => "text"}}, {'HTTP_AUTHORIZATION' => credentials}
         last_response.status.should == 418
       end
     end
