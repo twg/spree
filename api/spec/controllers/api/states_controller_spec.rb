@@ -15,6 +15,7 @@ describe Api::StatesController do
     Country.stub :find => country
     country.stub_chain(:states, :scoped, :find => state)
     User.stub(:find_for_token_authentication).with(:auth_token => VALID_TOKEN).and_return user
+    User.stub(:find_for_token_authentication).with(:auth_token => "foo").and_return nil
   end
 
   context "when valid api token" do
@@ -40,7 +41,28 @@ describe Api::StatesController do
   end
 
   context "when no api token" do
-    let(:credentials) { encode_credentials("") }
+
+    describe "#show" do
+      it "should return unauthorized" do
+        get uri_for("/countries/214/states/1.json"), nil
+        last_response.status.should == 418
+      end
+    end
+
+    describe "#index" do
+
+      context "when no search params" do
+        it "should return unauthorized" do
+          get uri_for("/states.json"), nil
+          last_response.status.should == 418
+        end
+      end
+    end
+
+  end
+
+  context "when bad api token" do
+    let(:credentials) { encode_credentials("foo") }
 
     describe "#show" do
       it "should return unauthorized" do
@@ -54,26 +76,6 @@ describe Api::StatesController do
       context "when no search params" do
         it "should return unauthorized" do
           get uri_for("/states.json"), nil, {'HTTP_AUTHORIZATION' => credentials}
-          last_response.status.should == 418
-        end
-      end
-    end
-
-  end
-
-  context "when bad api token" do
-    describe "#show" do
-      it "should return unauthorized" do
-        get uri_for("/countries/214/states/1.json"), nil
-        last_response.status.should == 418
-      end
-    end
-
-    describe "#index" do
-
-      context "when no search params" do
-        it "should return unauthorized" do
-          get uri_for("/states.json"), nil
           last_response.status.should == 418
         end
       end
