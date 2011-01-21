@@ -25,7 +25,7 @@ class CheckoutController < Spree::BaseController
       end
 
     else
-      render :edit
+      render :action => :edit
     end
   end
 
